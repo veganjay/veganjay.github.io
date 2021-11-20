@@ -1,0 +1,10 @@
+on: [push]
+
+jobs:
+  write_good_job:
+    runs-on: ubuntu-latest
+    name: Run write-good on all markdown
+    steps:
+      - name: Run write good
+        id: writegood
+        uses: veganjay/write-good-action@v1
