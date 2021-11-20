@@ -9,4 +9,4 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run write good
         id: writegood
-        uses: veganjay/write-good-action@v1.2
+        uses: veganjay/write-good-action@v1.1
