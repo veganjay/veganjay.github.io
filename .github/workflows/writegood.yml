@@ -1,3 +1,4 @@
+name: Write Good CI
 on: [push]
 
 jobs:
@@ -5,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Run write-good on all markdown
     steps:
+      - uses: actions/checkout@v2
       - name: Run write good
         id: writegood
         uses: veganjay/write-good-action@v1
