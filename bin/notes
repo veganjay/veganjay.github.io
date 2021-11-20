@@ -1,0 +1,27 @@
+#!/bin/sh
+
+DATE=`date +%m/%d/%Y`
+TIME=`date +%H:%M`
+TIMESTAMP=`date +%Y%m%d-%H%M`
+DATESTAMP=`date +%Y%m%d`
+NOTES_DIR=$HOME/Documents/Notes
+HEADER=notes
+
+# Create the directory if it does not exist
+if [ ! -d $NOTES_DIR ]
+then
+   mkdir -p $NOTES_DIR
+fi
+
+# If the user specified a header name, use it
+# Otherwise use the default
+if [ $# = 1 ]
+then
+    HEADER=$1
+fi
+
+#FILENAME=${HEADER}-${TIMESTAMP}.md
+FILENAME=${HEADER}-${DATESTAMP}.md
+echo "# $HEADER $DATE $TIME" >> ${NOTES_DIR}/${FILENAME}
+#vi ${NOTES_DIR}/${FILENAME}
+exec gedit ${NOTES_DIR}/${FILENAME}
