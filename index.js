@@ -70,5 +70,3 @@ function filterTable() {
         row.style.display = matches ? '' : 'none';
     });
 }
-
-loadCSV('trick-taking-collection.csv');
