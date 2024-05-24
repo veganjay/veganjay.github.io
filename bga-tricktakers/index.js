@@ -1,9 +1,11 @@
+let csvData = [];
+
 function loadCSV(url) {
     fetch(url)
         .then(response => response.text())
         .then(text => {
-            const data = text.trim().split('\n').map(row => row.split(','));
-            const headers = data.shift();
+            csvData = text.trim().split('\n').map(row => row.split(','));
+            const headers = csvData.shift();
             const table = document.getElementById('csvTable');
             const tbody = document.createElement('tbody');
 
@@ -18,23 +20,30 @@ function loadCSV(url) {
             });
             thead.appendChild(headerRow);
             table.appendChild(thead);
-
-            // Populate table body
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                row.forEach(cellData => {
-                    const td = document.createElement('td');
-                    td.textContent = cellData;
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
             table.appendChild(tbody);
 
-            // Add filter functionality
-            document.getElementById('filterInput').addEventListener('input', filterTable);
+            populateTable(csvData);
         })
         .catch(error => console.error('Error loading CSV:', error));
+}
+
+function populateTable(data) {
+    const tbody = document.getElementById('csvTable').querySelector('tbody');
+    while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+    }
+
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cellData => {
+            const td = document.createElement('td');
+            td.textContent = cellData;
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+
+    filterTable();  // Apply initial filter
 }
 
 function sortTable(columnName) {
@@ -61,12 +70,21 @@ function getIndex(columnName) {
 }
 
 function filterTable() {
-    const filter = document.getElementById('filterInput').value.toLowerCase();
+    const showBeta = document.getElementById('betaStatus').checked;
+    const showAlpha = document.getElementById('alphaStatus').checked;
+
     const rows = document.querySelectorAll('#csvTable tbody tr');
 
     rows.forEach(row => {
-        const cells = Array.from(row.querySelectorAll('td'));
-        const matches = cells.some(cell => cell.textContent.toLowerCase().includes(filter));
-        row.style.display = matches ? '' : 'none';
+        const status = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        const matchesBeta = showBeta && status === 'beta';
+        const matchesAlpha = showAlpha && status === 'alpha';
+        const matchesPublic = status === 'public';
+
+        if (matchesBeta || matchesAlpha || matchesPublic) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
     });
 }

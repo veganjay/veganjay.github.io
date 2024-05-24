@@ -3,22 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BGA Trick Takers</title>
 <link rel="stylesheet" href="css/style.css">
-<title>Trick-Taking Games</title>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Trick-Taking Games on BoardGameArena</h1>
-        <input type="text" id="filterInput" placeholder="Type to filter...">
-        <table id="csvTable">
-            <!-- Table body will be filled dynamically -->
-        </table>
+<div class="container">
+    <h1>Trick-Taking Games on BoardGameArena</h1>
+    <div>
+        
+        <input type="checkbox" id="betaStatus" checked>
+        <label for="betaStatus">Show beta games</label>
+        <input type="checkbox" id="alphaStatus" >
+        <label for="alphaStatus">Show alpha games</label>
     </div>
+    <table id="csvTable">
+        <!-- Table body will be filled dynamically -->
+    </table>
+</div>
 
-<script src="index.js" ></script>
+<script src="index.js"></script>
 <script>
-    loadCSV('bga-tricktakers.csv');
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCSV('bga-tricktakers.csv');
+
+        // Add event listeners for the checkboxes
+        //document.getElementById('publicStatus').addEventListener('change', filterTable);
+        document.getElementById('betaStatus').addEventListener('change', filterTable);
+        document.getElementById('alphaStatus').addEventListener('change', filterTable);
+    });
 </script>
 
 </body>
