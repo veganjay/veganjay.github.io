@@ -31,8 +31,21 @@ function loadCSV(url) {
             });
             table.appendChild(tbody);
 
+            // Initially hide/show the column based on checkbox state
+            toggleColumn('publisherCheckbox', 'Publisher');
+            toggleColumn('designerCheckbox', 'Designer');
+
             // Add filter functionality
             document.getElementById('filterInput').addEventListener('input', filterTable);
+
+            // Add checkbox hide column functionality
+            document.getElementById('publisherCheckbox').addEventListener('change', function() {
+                toggleColumn('publisherCheckbox', 'Publisher');
+            });
+            document.getElementById('designerCheckbox').addEventListener('change', function() {
+                toggleColumn('designerCheckbox', 'Designer');
+            });
+
         })
         .catch(error => console.error('Error loading CSV:', error));
 }
@@ -68,5 +81,19 @@ function filterTable() {
         const cells = Array.from(row.querySelectorAll('td'));
         const matches = cells.some(cell => cell.textContent.toLowerCase().includes(filter));
         row.style.display = matches ? '' : 'none';
+    });
+}
+
+function toggleColumn(checkboxId, columnName) {
+    const showPublisher = document.getElementById(checkboxId).checked;
+    const colIndex = getIndex(columnName) - 1; // Adjust for 0-based index
+
+    const th = document.querySelectorAll(`#csvTable th:nth-child(${colIndex + 1})`)[0];
+    th.style.display = showPublisher ? '' : 'none';
+
+    const rows = document.querySelectorAll('#csvTable tbody tr');
+    rows.forEach(row => {
+        const td = row.querySelectorAll('td')[colIndex];
+        td.style.display = showPublisher ? '' : 'none';
     });
 }
