@@ -34,6 +34,7 @@ function loadCSV(url) {
             // Initially hide/show the column based on checkbox state
             toggleColumn('publisherCheckbox', 'Publisher');
             toggleColumn('designerCheckbox', 'Designer');
+            toggleColumn('notesCheckbox', 'Notes');
 
             // Add filter functionality
             document.getElementById('filterInput').addEventListener('input', filterTable);
@@ -44,6 +45,9 @@ function loadCSV(url) {
             });
             document.getElementById('designerCheckbox').addEventListener('change', function() {
                 toggleColumn('designerCheckbox', 'Designer');
+            });
+            document.getElementById('notesCheckbox').addEventListener('change', function() {
+                toggleColumn('notesCheckbox', 'Notes');
             });
 
         })
