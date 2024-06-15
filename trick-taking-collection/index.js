@@ -11,6 +11,9 @@ function loadCSV(url) {
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
             headers.forEach(header => {
+                if (header.startsWith("#")) {
+                    return; // Skip this header
+                }
                 const th = document.createElement('th');
                 th.textContent = header;
                 th.addEventListener('click', () => sortTable(header));
@@ -22,11 +25,24 @@ function loadCSV(url) {
             // Populate table body
             data.forEach(row => {
                 const tr = document.createElement('tr');
-                row.forEach(cellData => {
+
+                row.forEach((cellData, index) => {
+                    if (index === 1) {
+                        return;
+                    }
                     const td = document.createElement('td');
-                    td.textContent = cellData;
+                    if (index === 0) { // Assume the "Name" column is the first column
+                        const a = document.createElement('a');
+                        a.href = row[1]; // Assume the "URL" column is the second column
+                        a.textContent = cellData;
+                        td.appendChild(a);
+                    } else if (index !== 1) { // Skip the URL column
+                        td.textContent = cellData;
+                        console.log("index: ", index, "= ", cellData);
+                    }
                     tr.appendChild(td);
                 });
+
                 tbody.appendChild(tr);
             });
             table.appendChild(tbody);
