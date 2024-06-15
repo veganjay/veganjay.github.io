@@ -18,6 +18,7 @@ function processCSV(text) {
     toggleColumn('publisherCheckbox', 'Publisher');
     toggleColumn('designerCheckbox', 'Designer');
     toggleColumn('notesCheckbox', 'Notes');
+    toggleColumn('playedCheckbox', 'Played');
 
     // Add filter functionality
     document.getElementById('filterInput').addEventListener('input', filterTable);
@@ -26,6 +27,7 @@ function processCSV(text) {
     setupColumnToggle('publisherCheckbox', 'Publisher');
     setupColumnToggle('designerCheckbox', 'Designer');
     setupColumnToggle('notesCheckbox', 'Notes');
+    setupColumnToggle('playedCheckbox', 'Played');
 }
 
 function parseCSV(text) {
