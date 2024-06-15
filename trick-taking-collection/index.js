@@ -74,6 +74,14 @@ function populateTableBody(data, table) {
         tbody.appendChild(tr);
     });
     table.appendChild(tbody);
+
+
+    // Log the row count after populating the table
+    const rowCount = getRowCount();
+    console.log('Number of rows:', rowCount);
+
+    // Update the total number of games
+    updateTotalGames(rowCount);
 }
 
 function sortTable(columnName) {
@@ -135,4 +143,9 @@ function getRowCount() {
     const table = document.getElementById('csvTable');
     const tbody = table.querySelector('tbody');
     return tbody ? tbody.rows.length : 0;
+}
+
+function updateTotalGames(count) {
+        const totalGamesElement = document.getElementById('totalGames');
+        totalGamesElement.textContent = `Total number of games: ${count}`;
 }
