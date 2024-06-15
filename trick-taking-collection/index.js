@@ -1,83 +1,88 @@
 function loadCSV(url) {
     fetch(url)
         .then(response => response.text())
-        .then(text => {
-            const data = text.trim().split('\n').map(row => row.split(','));
-            const headers = data.shift();
-            const table = document.getElementById('csvTable');
-            const tbody = document.createElement('tbody');
-
-            // Create table headers
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            headers.forEach(header => {
-                if (header.startsWith("#")) {
-                    return; // Skip this header
-                }
-                const th = document.createElement('th');
-                th.textContent = header;
-                th.addEventListener('click', () => sortTable(header));
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-
-            // Populate table body
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-
-                row.forEach((cellData, index) => {
-                    if (index === 1) {
-                        return;
-                    }
-                    const td = document.createElement('td');
-                    if (index === 0) { // Assume the "Name" column is the first column
-                        const a = document.createElement('a');
-                        a.href = row[1]; // Assume the "URL" column is the second column
-                        a.textContent = cellData;
-                        td.appendChild(a);
-                    } else if (index !== 1) { // Skip the URL column
-                        td.textContent = cellData;
-                        console.log("index: ", index, "= ", cellData);
-                    }
-                    tr.appendChild(td);
-                });
-
-                tbody.appendChild(tr);
-            });
-            table.appendChild(tbody);
-
-            // Initially hide/show the column based on checkbox state
-            toggleColumn('publisherCheckbox', 'Publisher');
-            toggleColumn('designerCheckbox', 'Designer');
-            toggleColumn('notesCheckbox', 'Notes');
-
-            // Add filter functionality
-            document.getElementById('filterInput').addEventListener('input', filterTable);
-
-            // Add checkbox hide column functionality
-            document.getElementById('publisherCheckbox').addEventListener('change', function() {
-                toggleColumn('publisherCheckbox', 'Publisher');
-            });
-            document.getElementById('designerCheckbox').addEventListener('change', function() {
-                toggleColumn('designerCheckbox', 'Designer');
-            });
-            document.getElementById('notesCheckbox').addEventListener('change', function() {
-                toggleColumn('notesCheckbox', 'Notes');
-            });
-
-        })
+        .then(text => processCSV(text))
         .catch(error => console.error('Error loading CSV:', error));
+}
+
+function processCSV(text) {
+    const data = parseCSV(text);
+    const headers = data.shift();
+    const table = document.getElementById('csvTable');
+    table.innerHTML = '';
+
+    createTableHeader(headers, table);
+    populateTableBody(data, table);
+
+    // Initially hide/show the column based on checkbox state
+    toggleColumn('publisherCheckbox', 'Publisher');
+    toggleColumn('designerCheckbox', 'Designer');
+    toggleColumn('notesCheckbox', 'Notes');
+
+    // Add filter functionality
+    document.getElementById('filterInput').addEventListener('input', filterTable);
+
+    // Add checkbox hide column functionality
+    setupColumnToggle('publisherCheckbox', 'Publisher');
+    setupColumnToggle('designerCheckbox', 'Designer');
+    setupColumnToggle('notesCheckbox', 'Notes');
+}
+
+function parseCSV(text) {
+    return text.trim().split('\n').map(row => row.split(','));
+}
+
+function createTableHeader(headers, table) {
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    headers.forEach(header => {
+        // Skip the URL column
+        if (!header.startsWith("#")) {
+            const th = document.createElement('th');
+            th.textContent = header;
+            th.addEventListener('click', () => sortTable(header));
+            headerRow.appendChild(th);
+        }
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+}
+
+function populateTableBody(data, table) {
+    const tbody = document.createElement('tbody');
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach((cellData, index) => {
+            // Skip the URL column
+            if (index !== 1) {
+                const td = document.createElement('td');
+                // Assume the 'Name' column is the first column
+                if (index === 0) {
+                    const a = document.createElement('a');
+                    // Assume the 'URL' column is the second column
+                    a.href = row[1];
+                    a.textContent = cellData;
+                    td.appendChild(a);
+                } else {
+                    td.textContent = cellData;
+                }
+                tr.appendChild(td);
+            }
+        });
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
 }
 
 function sortTable(columnName) {
     const table = document.getElementById('csvTable');
     const tbody = table.querySelector('tbody');
     const rows = Array.from(tbody.querySelectorAll('tr'));
+    const colIndex = getIndex(columnName);
 
     rows.sort((a, b) => {
-        const aValue = a.querySelector(`td:nth-child(${getIndex(columnName)})`).textContent.trim();
-        const bValue = b.querySelector(`td:nth-child(${getIndex(columnName)})`).textContent.trim();
+        const aValue = a.querySelector(`td:nth-child(${colIndex})`).textContent.trim();
+        const bValue = b.querySelector(`td:nth-child(${colIndex})`).textContent.trim();
         return aValue.localeCompare(bValue);
     });
 
@@ -105,15 +110,27 @@ function filterTable() {
 }
 
 function toggleColumn(checkboxId, columnName) {
-    const showPublisher = document.getElementById(checkboxId).checked;
-    const colIndex = getIndex(columnName) - 1; // Adjust for 0-based index
+    const showColumn = document.getElementById(checkboxId).checked;
+    const colIndex = getIndex(columnName) - 1;
 
     const th = document.querySelectorAll(`#csvTable th:nth-child(${colIndex + 1})`)[0];
-    th.style.display = showPublisher ? '' : 'none';
+    th.style.display = showColumn ? '' : 'none';
 
     const rows = document.querySelectorAll('#csvTable tbody tr');
     rows.forEach(row => {
         const td = row.querySelectorAll('td')[colIndex];
-        td.style.display = showPublisher ? '' : 'none';
+        td.style.display = showColumn ? '' : 'none';
     });
+}
+
+function setupColumnToggle(checkboxId, columnName) {
+    document.getElementById(checkboxId).addEventListener('change', function() {
+        toggleColumn(checkboxId, columnName);
+    });
+}
+
+function getRowCount() {
+    const table = document.getElementById('csvTable');
+    const tbody = table.querySelector('tbody');
+    return tbody ? tbody.rows.length : 0;
 }
