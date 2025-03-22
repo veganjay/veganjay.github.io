@@ -14,14 +14,11 @@ function processCSV(text) {
     createTableHeader(headers, table);
     populateTableBody(data, table);
 
-    // Initially hide/show the column based on checkbox state
-    toggleColumn('playedCheckbox', 'Played');
-
     // Add filter functionality
     document.getElementById('filterInput').addEventListener('input', filterTable);
 
     // Add checkbox hide column functionality
-    setupColumnToggle('playedCheckbox', 'Played');
+    setupFilterToggle('unplayedCheckbox', 'Unplayed');
 }
 
 function parseCSV(text) {
@@ -113,6 +110,24 @@ function filterTable() {
     });
 }
 
+function filterUnplayedGames(checkboxId, columnName) {
+    const rows = document.querySelectorAll('#csvTable tbody tr');
+    const colIndex = getIndex('Played') - 1; // Get the index of the 'Played' column
+    const showOnlyUnplayed = document.getElementById(checkboxId).checked;
+
+    if (showOnlyUnplayed) {
+        rows.forEach(row => {
+            const cell = row.querySelectorAll('td')[colIndex];
+            row.style.display = cell.textContent.trim() === '' ? '' : 'none'; // Show only if 'Played' is empty
+        });
+    } else {
+        rows.forEach(row => {
+            const cell = row.querySelectorAll('td')[colIndex];
+            row.style.display = '';
+        });
+    }
+}
+
 function toggleColumn(checkboxId, columnName) {
     const showColumn = document.getElementById(checkboxId).checked;
     const colIndex = getIndex(columnName) - 1;
@@ -127,9 +142,9 @@ function toggleColumn(checkboxId, columnName) {
     });
 }
 
-function setupColumnToggle(checkboxId, columnName) {
+function setupFilterToggle(checkboxId, columnName) {
     document.getElementById(checkboxId).addEventListener('change', function() {
-        toggleColumn(checkboxId, columnName);
+        filterUnplayedGames(checkboxId, columnName);
     });
 }
 
