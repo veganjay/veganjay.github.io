@@ -15,18 +15,12 @@ function processCSV(text) {
     populateTableBody(data, table);
 
     // Initially hide/show the column based on checkbox state
-    toggleColumn('publisherCheckbox', 'Publisher');
-    toggleColumn('designerCheckbox', 'Designer');
-    toggleColumn('notesCheckbox', 'Notes');
     toggleColumn('playedCheckbox', 'Played');
 
     // Add filter functionality
     document.getElementById('filterInput').addEventListener('input', filterTable);
 
     // Add checkbox hide column functionality
-    setupColumnToggle('publisherCheckbox', 'Publisher');
-    setupColumnToggle('designerCheckbox', 'Designer');
-    setupColumnToggle('notesCheckbox', 'Notes');
     setupColumnToggle('playedCheckbox', 'Played');
 }
 
